@@ -3,10 +3,9 @@ const axios = require('axios');
 const Alert = require('../models/alert');
 const sendEmail = require('../utils/email');
 
-// Function to check alerts and send notifications
 const checkAlerts = async () => {
     try {
-        const alerts = await Alert.find();
+        const alerts = await Alert.find({ alreadyInformed: false }); // Only check active alerts
 
         if (alerts.length === 0) {
             console.log('No active alerts to process');
@@ -40,8 +39,9 @@ const checkAlerts = async () => {
                 await sendEmail(alert.userEmail, subject, html);
                 console.log(`Alert triggered and email sent to ${alert.userEmail}`);
 
-                // Remove the alert after sending email
-                await Alert.findByIdAndDelete(alert._id);
+                // Update the alert's status to already informed
+                alert.alreadyInformed = true;
+                await alert.save();
             }
         }
     } catch (error) {

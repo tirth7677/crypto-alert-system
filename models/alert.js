@@ -19,6 +19,10 @@ const alertSchema = new mongoose.Schema({
         required: true,
         match: [/.+@.+\..+/, 'Please enter a valid email address']
     },
+    alreadyInformed: {
+        type: Boolean,
+        default: false // Default is false (active alerts)
+    },
     createdAt: {
         type: Date,
         default: Date.now

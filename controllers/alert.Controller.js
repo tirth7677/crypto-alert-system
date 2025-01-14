@@ -3,7 +3,6 @@ const createResponse = require('../utils/response');
 const sendEmail = require('../utils/email'); // Import the email function
 
 // Set a new price alert
-// Set a new price alert
 const setPriceAlert = async (req, res) => {
     try {
         const { symbol, price, condition, userEmail } = req.body;
@@ -50,16 +49,29 @@ const setPriceAlert = async (req, res) => {
     }
 };
 
-// Get all active alerts
+// Get all active alerts (alreadyInformed = false)
 const getAllActiveAlerts = async (req, res) => {
     try {
-        const alerts = await Alert.find();
+        const alerts = await Alert.find({ alreadyInformed: false });
         const totalAlerts = alerts.length;
 
         res.status(200).json(createResponse(true, 200, 'Active alerts fetched successfully', { total: totalAlerts, alerts }));
     } catch (error) {
         console.error('Error fetching active alerts:', error.message);
         res.status(500).json(createResponse(false, 500, 'Failed to fetch active alerts', { error: error.message }));
+    }
+};
+
+// Get all completed alerts (alreadyInformed = true)
+const getAllCompletedAlerts = async (req, res) => {
+    try {
+        const alerts = await Alert.find({ alreadyInformed: true });
+        const totalAlerts = alerts.length;
+
+        res.status(200).json(createResponse(true, 200, 'Completed alerts fetched successfully', { total: totalAlerts, alerts }));
+    } catch (error) {
+        console.error('Error fetching completed alerts:', error.message);
+        res.status(500).json(createResponse(false, 500, 'Failed to fetch completed alerts', { error: error.message }));
     }
 };
 
@@ -81,4 +93,4 @@ const deleteAlert = async (req, res) => {
     }
 };
 
-module.exports = { setPriceAlert, getAllActiveAlerts, deleteAlert };
+module.exports = { setPriceAlert, getAllActiveAlerts, deleteAlert,getAllCompletedAlerts };
