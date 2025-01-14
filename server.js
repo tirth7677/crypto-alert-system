@@ -3,6 +3,8 @@ const cors = require('cors');
 const dotenv = require('dotenv');
 const connectDB = require('./config/db');
 const priceRoutes = require('./routes/price.routes');
+const alertRoutes = require('./routes/alert.routes');
+require('./cronjob/priceMonitor'); // Import the cron job
 
 dotenv.config();
 connectDB();
@@ -13,6 +15,9 @@ app.use(express.json());
 
 // Register price routes
 app.use('/api/v1/prices', priceRoutes);
+
+// Register alert routes
+app.use('/api/v1/alerts', alertRoutes);
 
 // Enhanced health check route
 app.get('/', (req, res) => {
