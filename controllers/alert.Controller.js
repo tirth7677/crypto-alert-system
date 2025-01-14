@@ -42,5 +42,35 @@ const setPriceAlert = async (req, res) => {
         res.status(500).json(createResponse(false, 500, 'Failed to set price alert', { error: error.message }));
     }
 };
+// Get all active alerts
+const getAllActiveAlerts = async (req, res) => {
+    try {
+        const alerts = await Alert.find();
+        const totalAlerts = alerts.length;
 
-module.exports = { setPriceAlert };
+        res.status(200).json(createResponse(true, 200, 'Active alerts fetched successfully', { total: totalAlerts, alerts }));
+    } catch (error) {
+        console.error('Error fetching active alerts:', error.message);
+        res.status(500).json(createResponse(false, 500, 'Failed to fetch active alerts', { error: error.message }));
+    }
+};
+
+// Delete an alert by ID
+const deleteAlert = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        const alert = await Alert.findByIdAndDelete(id);
+
+        if (!alert) {
+            return res.status(404).json(createResponse(false, 404, 'Alert not found'));
+        }
+
+        res.status(200).json(createResponse(true, 200, 'Alert deleted successfully', alert));
+    } catch (error) {
+        console.error('Error deleting alert:', error.message);
+        res.status(500).json(createResponse(false, 500, 'Failed to delete alert', { error: error.message }));
+    }
+};
+
+module.exports = { setPriceAlert, getAllActiveAlerts, deleteAlert };
