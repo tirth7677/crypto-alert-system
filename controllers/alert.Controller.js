@@ -3,6 +3,7 @@ const createResponse = require('../utils/response');
 const sendEmail = require('../utils/email'); // Import the email function
 
 // Set a new price alert
+// Set a new price alert
 const setPriceAlert = async (req, res) => {
     try {
         const { symbol, price, condition, userEmail } = req.body;
@@ -18,6 +19,12 @@ const setPriceAlert = async (req, res) => {
 
         if (price <= 0) {
             return res.status(400).json(createResponse(false, 400, 'Price must be a positive number'));
+        }
+
+        // Check for duplicate alert
+        const existingAlert = await Alert.findOne({ symbol, price, condition, userEmail });
+        if (existingAlert) {
+            return res.status(409).json(createResponse(false, 409, 'Duplicate alert: An alert with the same details already exists'));
         }
 
         // Create a new alert
@@ -42,6 +49,7 @@ const setPriceAlert = async (req, res) => {
         res.status(500).json(createResponse(false, 500, 'Failed to set price alert', { error: error.message }));
     }
 };
+
 // Get all active alerts
 const getAllActiveAlerts = async (req, res) => {
     try {
